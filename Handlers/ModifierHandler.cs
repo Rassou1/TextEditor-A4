@@ -17,15 +17,15 @@ namespace Assignment4_CS_GUI.Handlers
         {
             this.buffer = buffer;
             threads = new Thread[numberOfThreads];
-            modifier = new Modifier(buffer, stringToFind, stringToReplace);
-            CreateModifier(stringToFind, stringToReplace);
+            modifier = new Modifier(buffer, stringToFind, stringToReplace, this);
+            CreateModifier();
         }
 
-        public void CreateModifier(string stringToFind, string stringToReplace)
+        public void CreateModifier()
         {
             for(int i = 0; i < threads.Length; i++)
             {
-                threads[i] = new Thread(modifier.Run());
+                threads[i] = new Thread(modifier.Run);
                 threads[i].Name = "Modifier" + i;
                 threads[i].Start();
             }

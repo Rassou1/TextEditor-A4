@@ -35,80 +35,98 @@ namespace Assignment4_CS_GUI.Model
             }
         }
 
-        public void Read(string s)
+        public void Read()
         {
             Monitor.Enter(lockObj);
-
-            while (buffer[readerPos].Status != BufferStatus.Checked)
+            try
             {
-                Monitor.Wait(lockObj);
-            }
+                while (buffer[readerPos].Status != BufferStatus.Checked)
+                {
+                    Monitor.Wait(lockObj);
+                }
 
-            controller.AddToDestination(buffer[readerPos].TextString);
+                controller.AddToDestination(buffer[readerPos].TextString);
 
-            string text = $"{Thread.CurrentThread.Name} - read: {buffer[readerPos]}"; //finish this line
-            controller.AddToLog(text);
+                string text = $"{Thread.CurrentThread.Name} - read: {buffer[readerPos]}"; //finish this line
+                controller.AddToLog(text);
 
                 buffer[readerPos].Status = BufferStatus.Empty;
-               
+
                 readerPos = readerPos + 1 % buffer.Length;
-            
-            
-            Monitor.PulseAll(lockObj);
-            Monitor.Exit(lockObj);
+            }
+            finally
+            {
+                Monitor.PulseAll(lockObj);
+                Monitor.Exit(lockObj);
+            }
         }
 
         public void Modify(string stringToFind, string stringToReplace)
         {
             Monitor.Enter(lockObj);
-            while (buffer[modifierPos].Status != BufferStatus.Empty)
+            try
             {
-                Monitor.Wait(lockObj);
+                while (buffer[modifierPos].Status != BufferStatus.Empty)
+                {
+                    Monitor.Wait(lockObj);
+                }
+
+                string bufferString = buffer[modifierPos].TextString;
+
+                while (bufferString.Contains(stringToFind) && !stringToFind.Equals(stringToReplace))
+                {
+                    bufferString = bufferString.Replace(stringToFind, stringToReplace);
+
+                    string s = $"{Thread.CurrentThread.Name} - modified: {buffer[modifierPos]}"; //finish this line
+                    controller.AddToLog(s);
+                }
+                buffer[modifierPos].TextString = bufferString;
+                buffer[modifierPos].Status = BufferStatus.Checked;
+                modifierPos = modifierPos + 1 % buffer.Length;
             }
-
-            string bufferString = buffer[modifierPos].TextString;
-
-            while(bufferString.Contains(stringToFind) && !stringToFind.Equals(stringToReplace))
+            finally
             {
-                bufferString = bufferString.Replace(stringToFind, stringToReplace);
-
-                string s = $"{Thread.CurrentThread.Name} - modified: {buffer[modifierPos]}"; //finish this line
-                controller.AddToLog(s);
+                Monitor.PulseAll(lockObj);
+                Monitor.Exit(lockObj);
             }
-            buffer[modifierPos].TextString = bufferString;
-            buffer[modifierPos].Status = BufferStatus.Checked;
-            modifierPos = modifierPos+1%buffer.Length;
-            Monitor.PulseAll(lockObj);
-            Monitor.Exit(lockObj);
+            
         }
 
         public void Write(string s)
         {
             Monitor.Enter(lockObj);
 
-            while (buffer[writerPos].Status != BufferStatus.Empty)
+            try
             {
-                Monitor.Wait(lockObj);
+                while (buffer[writerPos].Status != BufferStatus.Empty)
+                {
+                    Monitor.Wait(lockObj);
+                }
+                if (s != null)
+                {
+                    buffer[writerPos].TextString = s;
+                    buffer[writerPos].Status = BufferStatus.New;
+                    string text = $"{Thread.CurrentThread.Name} - wrote: {buffer[writerPos]}"; //finish this line
+                    controller.AddToLog(text);
+                    writerPos = writerPos + 1 % buffer.Length;
+                }
+                else
+                {
+                    Thread.CurrentThread.Interrupt();
+                }
+
             }
-            if(s != null)
+            finally
             {
-                buffer[writerPos].TextString = s;
-                buffer[writerPos].Status = BufferStatus.New;
-                string text = $"{Thread.CurrentThread.Name} - wrote: {buffer[writerPos]}"; //finish this line
-                controller.AddToLog(text);
-                writerPos = writerPos + 1 % buffer.Length;
+                Monitor.PulseAll(lockObj);
+                Monitor.Exit(lockObj);
             }
-            else
-            {
-                Thread.CurrentThread.Interrupt();
-            }
-            Monitor.PulseAll(lockObj);
-            Monitor.Exit(lockObj);
+            
         }
 
         public void SignalClose()
         {
-            controller.StopCurrentThreads();
+            controller.StopThreads();
         }
 
 

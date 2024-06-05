@@ -17,15 +17,15 @@ namespace Assignment4_CS_GUI.Handlers
         {
             this.buffer = buffer;
             threads = new Thread[numberOfThreads];
-            reader = new Reader(buffer);
+            reader = new Reader(buffer, this);
             CreateReaders();
         }
 
-        public void CreateReaders(string stringToFind, string stringToReplace)
+        public void CreateReaders()
         {
             for (int i = 0; i < threads.Length; i++)
             {
-                threads[i] = new Thread(reader.Run());
+                threads[i] = new Thread(reader.Run);
                 threads[i].Name = "Reader" + i;
                 threads[i].Start();
             }

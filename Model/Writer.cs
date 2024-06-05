@@ -30,7 +30,11 @@ namespace Assignment4_CS_GUI.Model
                     lock (handler)
                     {
                         string toWrite = handler.GetStringFromList();
-                        buffer.Write(toWrite);
+                        if (toWrite != null && toWrite != "")
+                        {
+                            buffer.Write(toWrite);
+                        }
+                            
                     }
                 }
                 catch(Exception)

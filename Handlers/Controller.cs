@@ -1,6 +1,7 @@
 ﻿using Assignment4_CS_GUI.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,8 +66,8 @@ namespace Assignment4_CS_GUI.Handlers
 
         public void StartThreads(string[] strings, string stringToFind, string stringToReplace)
         {
-            writerHandler = new WriterHandler(strings, buffer, 4);
-            modifierHandler = new ModifierHandler(buffer, 3, stringToFind, stringToReplace);
+            writerHandler = new WriterHandler(strings, buffer, 3);
+            modifierHandler = new ModifierHandler(buffer, 4, stringToFind, stringToReplace);
             readerHandler = new ReaderHandler(buffer, 1);
         }
 
