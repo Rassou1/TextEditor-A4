@@ -33,7 +33,7 @@ namespace Assignment4_CS_GUI.Handlers
             {
                 if (richTextDestination.InvokeRequired)
                 {
-                    richTextDestination.Invoke(new Action(() => UpdateDestination(s)));
+                    richTextDestination.Invoke(new Action(() => { UpdateDestination(s); }));
                 }
                 else
                 {
@@ -55,7 +55,7 @@ namespace Assignment4_CS_GUI.Handlers
             {
                 if(listLog.InvokeRequired)
                 {
-                    listLog.Invoke(new Action(() => listLog.Items.Add(s)));
+                    listLog.Invoke(new Action(() => { listLog.Items.Add(s); }));
                 }
                 else
                 {

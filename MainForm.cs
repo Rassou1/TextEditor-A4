@@ -7,7 +7,7 @@ namespace Assignment4_CS_GUI
     public partial class MainForm : Form
     {
         private FileManager fileMngr = new FileManager();
-        string[] lines;
+        List<string> lines;
 
         public MainForm()
         {
@@ -45,7 +45,7 @@ namespace Assignment4_CS_GUI
             rtxtSource.Clear();
             lstStatus.Items.Clear();
             string errorMsg = string.Empty;
-            lines = fileMngr.ReadFromTextFile(fileName, out errorMsg).ToArray();
+            lines = fileMngr.ReadFromTextFile(fileName, out errorMsg);
             //lblSource.Text = fileName;
             if (lines != null)
             {
@@ -53,7 +53,7 @@ namespace Assignment4_CS_GUI
                 {
                     rtxtSource.AppendText(line + "\n");
                 }
-                lstStatus.Items.Add("Lines read from the file: " + lines.Length);
+                lstStatus.Items.Add("Lines read from the file: " + lines.Count);
             }
             else
                 MessageBox.Show(errorMsg);
@@ -71,7 +71,7 @@ namespace Assignment4_CS_GUI
                 Controller controller = new Controller(rtxtDest, lstStatus);
             rtxtDest.Text = null;
 
-            controller.Execute(lines, txtFind.Text, txtReplace.Text);
+            controller.Execute(lines.ToArray(), txtFind.Text, txtReplace.Text);
 
         }
 

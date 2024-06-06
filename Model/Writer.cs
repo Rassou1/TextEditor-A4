@@ -27,14 +27,20 @@ namespace Assignment4_CS_GUI.Model
             {
                 try
                 {
-                    lock (handler)
+                    string toWrite = handler.GetStringFromList();
+                    if (toWrite != null && toWrite != "")
                     {
-                        string toWrite = handler.GetStringFromList();
-                        if (toWrite != null && toWrite != "")
+                        lock (handler)
                         {
-                            buffer.Write(toWrite);
-                        }
+                                buffer.Write(toWrite);
                             
+                        }
+                        
+                            
+                    }
+                    else
+                    {
+                        isRunning = false;
                     }
                 }
                 catch(Exception)
@@ -43,7 +49,7 @@ namespace Assignment4_CS_GUI.Model
                 }
             }
 
-            buffer.SignalClose();
+          
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Assignment4_CS_GUI.Model
 
                 controller.AddToDestination(buffer[readerPos].TextString);
 
-                string text = $"{Thread.CurrentThread.Name} - read: {buffer[readerPos]}"; //finish this line
+                string text = $"{Thread.CurrentThread.Name} - read: {buffer[readerPos].TextString}"; //finish this line
                 controller.AddToLog(text);
 
                 buffer[readerPos].Status = BufferStatus.Empty;
@@ -66,7 +66,7 @@ namespace Assignment4_CS_GUI.Model
             Monitor.Enter(lockObj);
             try
             {
-                while (buffer[modifierPos].Status != BufferStatus.Empty)
+                while (buffer[modifierPos].Status != BufferStatus.New)
                 {
                     Monitor.Wait(lockObj);
                 }
@@ -77,7 +77,7 @@ namespace Assignment4_CS_GUI.Model
                 {
                     bufferString = bufferString.Replace(stringToFind, stringToReplace);
 
-                    string s = $"{Thread.CurrentThread.Name} - modified: {buffer[modifierPos]}"; //finish this line
+                    string s = $"{Thread.CurrentThread.Name} - modified: {buffer[modifierPos].TextString}"; //finish this line
                     controller.AddToLog(s);
                 }
                 buffer[modifierPos].TextString = bufferString;
@@ -106,13 +106,14 @@ namespace Assignment4_CS_GUI.Model
                 {
                     buffer[writerPos].TextString = s;
                     buffer[writerPos].Status = BufferStatus.New;
-                    string text = $"{Thread.CurrentThread.Name} - wrote: {buffer[writerPos]}"; //finish this line
-                    controller.AddToLog(text);
                     writerPos = writerPos + 1 % buffer.Length;
+                    string text = $"{Thread.CurrentThread.Name} - wrote: {buffer[writerPos].TextString}"; //finish this line
+                    controller.AddToLog(text);
+                    
                 }
                 else
                 {
-                    Thread.CurrentThread.Interrupt();
+                    Thread.CurrentThread.Join();
                 }
 
             }
@@ -124,10 +125,7 @@ namespace Assignment4_CS_GUI.Model
             
         }
 
-        public void SignalClose()
-        {
-            controller.StopThreads();
-        }
+        
 
 
     }
